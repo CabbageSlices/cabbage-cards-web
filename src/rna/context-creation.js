@@ -46,7 +46,7 @@ export const variable = (name, defaultVal) => context => {
 
 		 return stored || _self.get(name)
 	}
-	const setter = (data, self) => self.update(name, hasValue(data.target) ? data.target.value : data)
+	const setter = (data) => _self.update(name, hasValue(data.target) ? data.target.value : data)
 
 	const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1)
 	context.stateToPropsMap[name] = selector

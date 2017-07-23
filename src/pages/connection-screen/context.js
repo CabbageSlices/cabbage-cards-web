@@ -54,9 +54,6 @@ const context = Context([
 	variable('playerName', ''),
 	variable('roomCode', ''),
 
-	action('setPlayerName', (data, self) => self.update('playerName', data.target.value)),
-	action('setRoomCode', (data, self) => self.update('roomCode', data.target.value)),
-
 	action('goToTest', () => send('pushLocation', {pageName: 'test', params: {v: 'v'} })),
 
 	action('connectToServer', (data, self) => { send('connectToServer', {
