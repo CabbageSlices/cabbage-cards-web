@@ -8,11 +8,10 @@ const send = (messageType, messageData) => {
 	let event = messageType
 	let data = {...messageData}
 
-	if(messageType.indexOf(ports.backendMessage) >= 0) {
+	if(messageType.indexOf(ports.backendMessage) >= 0 && !data.sentFromServer) {
 		event = 'sendToBackend'
 		data = {...data, messageType: messageType.replace(ports.backendMessage, '')}
 	}
-
 	eventManager.emit(event, data)
 }
 

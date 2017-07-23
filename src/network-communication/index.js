@@ -21,7 +21,11 @@ networkManager.connectToServer = function({playerName, roomCode}) {
 }
 
 networkManager.onServerMessage = function(data) {
-	const {messageType, ...messageData} = data
+	let {messageType, ...messageData} = data
+	messageData.sentFromServer = true
+
+	messageType = messageType.indexOf('connectToServer') >= 0 ?
+		messageType : `${ports.backendMessage}${messageType}`
 	send(messageType, messageData)
 }
 
