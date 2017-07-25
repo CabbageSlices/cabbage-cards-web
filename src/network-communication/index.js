@@ -11,13 +11,22 @@ networkManager.connectToServer = function({playerName, roomCode}) {
 
 	delete this.socket
 	this.socket = io(ports.backend, { autoConnect: false, forceNew: true})
-	this.socket.on('connect', () => this.sendConnectionParameters(playerName, roomCode) )
+	this.socket.on('connect', () => this.onConnect(playerName, roomCode))
 	this.socket.on('message', this.onServerMessage)
 	this.socket.on('connect_error', () => send('connectToServer/error'))
 	this.socket.on('connect_timeout', () => send('connectToServer/timeout'))
 	this.socket.on('invalidRoomCode', () => console.log('invalidCode'))
 	this.socket.on('disconnect', (e) => {console.log(e); this.socket.close()}  )
+	//this.socket.on('keepAlive', (a) => console.log('a'))
 	this.socket.open()
+}
+
+networkManager.onConnect = function(playerName, roomCode) {
+
+	this.sendConnectionParameters(playerName, roomCode)
+	setInterval(() => {this.socket.emit('keepAlive');},
+		10 * 1000
+	)
 }
 
 networkManager.onServerMessage = function(data) {
