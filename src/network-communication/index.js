@@ -9,6 +9,11 @@ var networkManager = {
 
 networkManager.connectToServer = function({playerName, roomCode}) {
 
+	if(this.socket && this.socket.connected) {
+		send('connectToServer/error', {message: 'Already connected to server'})
+		return;
+	}
+
 	delete this.socket
 	this.socket = io(ports.backend, { autoConnect: false, forceNew: true})
 	this.socket.on('connect', () => this.onConnect(playerName, roomCode))
@@ -24,9 +29,11 @@ networkManager.connectToServer = function({playerName, roomCode}) {
 networkManager.onConnect = function(playerName, roomCode) {
 
 	this.sendConnectionParameters(playerName, roomCode)
-	setInterval(() => {this.socket.emit('keepAlive');},
+	const id = setInterval(() => {this.socket.emit('keepAlive');},
 		10 * 1000
 	)
+
+	this.socket.on('disconnect', clearInterval(id))
 }
 
 networkManager.onServerMessage = function(data) {
@@ -44,7 +51,7 @@ networkManager.sendConnectionParameters = function(playerName, roomCode) {
 
 networkManager.sendMessage = function(data) {
 	const {messageType, ...messageData} = data
-	this.socket.emit(messageType, messageData)
+	this.socket.emit('sendToUnity', data)
 }
 
 receive('connectToServer', networkManager.connectToServer.bind(networkManager))
